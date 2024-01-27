@@ -7,7 +7,8 @@ namespace WinForms_MySQL
     public partial class Form1 : Form
     {
         MySqlConnection con;
-
+        string idSel = "";
+        int sel;
         public Form1()
         {
             InitializeComponent();
@@ -124,23 +125,23 @@ namespace WinForms_MySQL
         private void btnGuardar_Click(object sender, EventArgs e)
         {
             string mensajeError = " ";
-           
-            if(txtInsNombre.Text==" ")
+
+            if (txtInsNombre.Text == " ")
             {
                 mensajeError += "El nombre es requerido";
             }
-            if(txtInsApellido.Text==" ")
+            if (txtInsApellido.Text == " ")
             {
                 mensajeError += "El apellido es requerido";
             }
-            if(txtInsEdad.Text==" ")
+            if (txtInsEdad.Text == " ")
             {
                 mensajeError += "La edad es requerida";
             }
-            if(mensajeError==" ")
+            if (mensajeError == " ")
             {
                 string query = "insert into trabajadores (nombre,apellido,edad) values " +
-                    "('"+txtInsNombre.Text+"','"+txtInsApellido.Text+"','"+txtInsEdad.Text +"' )";
+                    "('" + txtInsNombre.Text + "','" + txtInsApellido.Text + "','" + txtInsEdad.Text + "' )";
                 MySqlCommand comand = new MySqlCommand(query, con);
                 comand.CommandTimeout = 60;
                 MySqlDataReader reader;
@@ -154,7 +155,8 @@ namespace WinForms_MySQL
                     txtInsNombre.Text = " ";
                     txtInsApellido.Text = " ";
                     txtInsEdad.Text = " ";
-                }catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex);
                 }
@@ -162,6 +164,85 @@ namespace WinForms_MySQL
             else
             {
                 MessageBox.Show(mensajeError);
+            }
+        }
+
+        private void btnEditar_Click(object sender, EventArgs e)
+        {
+            string mensajeError = " ";
+
+            if (txtInsNombre.Text == " ")
+            {
+                mensajeError += "El nombre es requerido";
+            }
+            if (txtInsApellido.Text == " ")
+            {
+                mensajeError += "El apellido es requerido";
+            }
+            if (txtInsEdad.Text == " ")
+            {
+                mensajeError += "La edad es requerida";
+            }
+            if (mensajeError == " ")
+            {
+                string query = "update trabajadores set nombre='" + txtInsNombre.Text + "', apellido='" + txtInsApellido.Text + "', edad='" + txtInsEdad.Text + "' where id='" + idSel + "';";
+                MySqlCommand comand = new MySqlCommand(query, con);
+                comand.CommandTimeout = 60;
+                MySqlDataReader reader;
+                try
+                {
+                    reader = comand.ExecuteReader();
+                    reader.Close();
+                    dataGridView.Rows.Clear();
+                    dataGridView.Refresh();
+                    conexionAutomatica();
+                    txtInsNombre.Text = " ";
+                    txtInsApellido.Text = " ";
+                    txtInsEdad.Text = " ";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
+            else
+            {
+                MessageBox.Show(mensajeError);
+            }
+
+        }
+
+        private void dataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            sel = e.RowIndex;
+            txtInsNombre.Text = dataGridView.Rows[sel].Cells[1].Value.ToString();
+            txtInsApellido.Text = dataGridView.Rows[sel].Cells[2].Value.ToString();
+            txtInsEdad.Text = dataGridView.Rows[sel].Cells[3].Value.ToString();
+            idSel = dataGridView.Rows[sel].Cells[0].Value.ToString();
+        }
+
+        private void btnBorrar_Click(object sender, EventArgs e)
+        {
+            idSel = dataGridView.Rows[sel].Cells[0].Value.ToString();
+
+            string query = "delete from trabajadores where id='"+idSel+"';";
+            MySqlCommand comand = new MySqlCommand(query, con);
+            comand.CommandTimeout = 60;
+            MySqlDataReader reader;
+            try
+            {
+                reader = comand.ExecuteReader();
+                reader.Close();
+                dataGridView.Rows.Clear();
+                dataGridView.Refresh();
+                conexionAutomatica();
+                txtInsNombre.Text = " ";
+                txtInsApellido.Text = " ";
+                txtInsEdad.Text = " ";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
             }
         }
     }
